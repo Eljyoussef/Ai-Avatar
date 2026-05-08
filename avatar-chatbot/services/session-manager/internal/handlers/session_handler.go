@@ -4,6 +4,7 @@ import (
     "context"
     "encoding/json"
     "time"
+    "strings"
 
     "github.com/avatar-chatbot/session-manager/internal/session"
     "github.com/nats-io/nats.go"
