@@ -1,0 +1,429 @@
+avatar-chatbot/
+│
+├── apps/
+│   │
+│   ├── frontend/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── (auth)/
+│   │   │   ├── (chat)/
+│   │   │   ├── (settings)/
+│   │   │   ├── api/
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
+│   │   │   └── globals.css
+│   │   │
+│   │   ├── components/
+│   │   │   ├── audio/
+│   │   │   ├── avatar/
+│   │   │   ├── chat/
+│   │   │   ├── documents/
+│   │   │   ├── settings/
+│   │   │   ├── ui/
+│   │   │   └── layout/
+│   │   │
+│   │   ├── hooks/
+│   │   │   ├── useWebRTC.ts
+│   │   │   ├── useAudioStream.ts
+│   │   │   ├── useAvatar.ts
+│   │   │   ├── useSession.ts
+│   │   │   └── useNatsEvents.ts
+│   │   │
+│   │   ├── lib/
+│   │   │   ├── api.ts
+│   │   │   ├── websocket.ts
+│   │   │   ├── auth.ts
+│   │   │   └── constants.ts
+│   │   │
+│   │   ├── services/
+│   │   │   ├── audio.service.ts
+│   │   │   ├── avatar.service.ts
+│   │   │   ├── chat.service.ts
+│   │   │   └── upload.service.ts
+│   │   │
+│   │   ├── stores/
+│   │   │   ├── session.store.ts
+│   │   │   ├── audio.store.ts
+│   │   │   ├── avatar.store.ts
+│   │   │   └── chat.store.ts
+│   │   │
+│   │   ├── styles/
+│   │   ├── public/
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   ├── next.config.js
+│   │   └── Dockerfile
+│   │
+│   └── admin-dashboard/
+│       ├── metrics/
+│       ├── sessions/
+│       ├── avatars/
+│       ├── logs/
+│       └── Dockerfile
+│
+├── services/
+│   │
+│   ├── gateway/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── api/
+│   │   │   ├── websocket/
+│   │   │   ├── webrtc/
+│   │   │   ├── streaming/
+│   │   │   ├── middleware/
+│   │   │   ├── auth/
+│   │   │   ├── nats/
+│   │   │   ├── metrics/
+│   │   │   ├── schemas/
+│   │   │   ├── config/
+│   │   │   ├── utils/
+│   │   │   └── main.py
+│   │   │
+│   │   ├── tests/
+│   │   ├── requirements.txt
+│   │   ├── Dockerfile
+│   │   └── .env
+│   │
+│   ├── session-manager/
+│   │   │
+│   │   ├── cmd/
+│   │   │   └── main.go
+│   │   │
+│   │   ├── internal/
+│   │   │   ├── session/
+│   │   │   ├── redis/
+│   │   │   ├── nats/
+│   │   │   ├── memory/
+│   │   │   ├── interruptions/
+│   │   │   ├── handlers/
+│   │   │   ├── models/
+│   │   │   ├── metrics/
+│   │   │   └── config/
+│   │   │
+│   │   ├── pkg/
+│   │   ├── go.mod
+│   │   ├── go.sum
+│   │   ├── Dockerfile
+│   │   └── .env
+│   │
+│   ├── accent-router/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── classifier/
+│   │   │   ├── routing/
+│   │   │   ├── profiles/
+│   │   │   ├── inference/
+│   │   │   ├── metrics/
+│   │   │   └── main.py
+│   │   │
+│   │   ├── weights/
+│   │   ├── tests/
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   │
+│   ├── asr-service/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── streaming/
+│   │   │   ├── whisper/
+│   │   │   ├── decoding/
+│   │   │   ├── vad/
+│   │   │   ├── endpointing/
+│   │   │   ├── nats/
+│   │   │   ├── metrics/
+│   │   │   ├── config/
+│   │   │   └── main.py
+│   │   │
+│   │   ├── models/
+│   │   │   ├── fr-fr/
+│   │   │   ├── fr-ca/
+│   │   │   ├── fr-af/
+│   │   │   ├── fr-be/
+│   │   │   ├── fr-ch/
+│   │   │   └── multilingual/
+│   │   │
+│   │   ├── tests/
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   │
+│   ├── intent-service/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── classifiers/
+│   │   │   ├── predictors/
+│   │   │   ├── routing/
+│   │   │   ├── metrics/
+│   │   │   └── main.py
+│   │   │
+│   │   ├── models/
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   │
+│   ├── rag-service/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── retrieval/
+│   │   │   ├── reranking/
+│   │   │   ├── embeddings/
+│   │   │   ├── compression/
+│   │   │   ├── chunking/
+│   │   │   ├── graph/
+│   │   │   ├── pipelines/
+│   │   │   ├── metrics/
+│   │   │   └── main.py
+│   │   │
+│   │   ├── workers/
+│   │   ├── tests/
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   │
+│   ├── document-processor/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── ingestion/
+│   │   │   ├── extraction/
+│   │   │   ├── parsing/
+│   │   │   ├── chunking/
+│   │   │   ├── embedding/
+│   │   │   ├── indexing/
+│   │   │   ├── ocr/
+│   │   │   ├── metrics/
+│   │   │   └── main.py
+│   │   │
+│   │   ├── uploads/
+│   │   ├── temp/
+│   │   ├── tests/
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   │
+│   ├── inference-gateway/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── prompting/
+│   │   │   ├── routing/
+│   │   │   ├── streaming/
+│   │   │   ├── fallback/
+│   │   │   ├── providers/
+│   │   │   ├── templates/
+│   │   │   ├── metrics/
+│   │   │   └── main.py
+│   │   │
+│   │   ├── tests/
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   │
+│   ├── tts-service/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── xtts/
+│   │   │   ├── synthesis/
+│   │   │   ├── streaming/
+│   │   │   ├── chunking/
+│   │   │   ├── voices/
+│   │   │   ├── metrics/
+│   │   │   └── main.py
+│   │   │
+│   │   ├── voices/
+│   │   │   ├── fr-fr/
+│   │   │   ├── fr-ca/
+│   │   │   ├── fr-af/
+│   │   │   ├── fr-be/
+│   │   │   ├── fr-ch/
+│   │   │   └── cloned/
+│   │   │
+│   │   ├── tests/
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   │
+│   ├── avatar-adapter/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── duix/
+│   │   │   ├── rendering/
+│   │   │   ├── synchronization/
+│   │   │   ├── streaming/
+│   │   │   ├── avatars/
+│   │   │   ├── cache/
+│   │   │   ├── metrics/
+│   │   │   └── main.py
+│   │   │
+│   │   ├── temp/
+│   │   ├── tests/
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   │
+│   ├── memory-service/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── redis_store/
+│   │   │   ├── postgres_store/
+│   │   │   ├── semantic_memory/
+│   │   │   ├── summarization/
+│   │   │   ├── extraction/
+│   │   │   ├── metrics/
+│   │   │   └── main.py
+│   │   │
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   │
+│   ├── summarizer/
+│   │   │
+│   │   ├── app/
+│   │   │   ├── compression/
+│   │   │   ├── summarization/
+│   │   │   ├── extraction/
+│   │   │   └── main.py
+│   │   │
+│   │   ├── requirements.txt
+│   │   └── Dockerfile
+│   │
+│   └── auth-service/
+│       │
+│       ├── app/
+│       │   ├── jwt/
+│       │   ├── users/
+│       │   ├── oauth/
+│       │   ├── sessions/
+│       │   └── main.py
+│       │
+│       ├── requirements.txt
+│       └── Dockerfile
+│
+├── infrastructure/
+│   │
+│   ├── nats/
+│   │   ├── nats-server.conf
+│   │   └── jetstream.conf
+│   │
+│   ├── redis/
+│   │   └── redis.conf
+│   │
+│   ├── postgres/
+│   │   ├── init.sql
+│   │   └── migrations/
+│   │
+│   ├── qdrant/
+│   │   └── config.yaml
+│   │
+│   ├── opensearch/
+│   │   └── opensearch.yml
+│   │
+│   ├── vllm/
+│   │   └── launch.sh
+│   │
+│   ├── duix/
+│   │   ├── models/
+│   │   ├── assets/
+│   │   └── configs/
+│   │
+│   ├── nginx/
+│   │   ├── nginx.conf
+│   │   └── ssl/
+│   │
+│   └── minio/
+│       └── policies/
+│
+├── ai-models/
+│   │
+│   ├── whisper/
+│   ├── xtts/
+│   ├── llm/
+│   ├── rerankers/
+│   ├── embeddings/
+│   ├── accent/
+│   └── duix/
+│
+├── shared/
+│   │
+│   ├── nats/
+│   ├── logging/
+│   ├── tracing/
+│   ├── schemas/
+│   ├── prompts/
+│   ├── auth/
+│   ├── metrics/
+│   ├── constants/
+│   ├── events/
+│   ├── utils/
+│   └── types/
+│
+├── monitoring/
+│   │
+│   ├── prometheus/
+│   │   └── prometheus.yml
+│   │
+│   ├── grafana/
+│   │   ├── dashboards/
+│   │   └── datasources/
+│   │
+│   ├── loki/
+│   │   └── loki-config.yml
+│   │
+│   ├── jaeger/
+│   │
+│   └── otel/
+│       └── otel-collector-config.yaml
+│
+├── configs/
+│   │
+│   ├── development/
+│   ├── production/
+│   ├── staging/
+│   └── local/
+│
+├── scripts/
+│   │
+│   ├── bootstrap.sh
+│   ├── start-dev.sh
+│   ├── start-prod.sh
+│   ├── build-all.sh
+│   ├── download-models.sh
+│   ├── migrate-db.sh
+│   ├── backup.sh
+│   ├── restore.sh
+│   ├── cleanup.sh
+│   └── healthcheck.sh
+│
+├── docs/
+│   │
+│   ├── architecture/
+│   ├── api/
+│   ├── deployment/
+│   ├── models/
+│   ├── observability/
+│   └── troubleshooting/
+│
+├── docker/
+│   │
+│   ├── base/
+│   ├── cpu/
+│   ├── gpu/
+│   └── development/
+│
+├── tests/
+│   │
+│   ├── integration/
+│   ├── load/
+│   ├── streaming/
+│   ├── rag/
+│   ├── avatars/
+│   └── e2e/
+│
+├── .github/
+│   │
+│   └── workflows/
+│       ├── ci.yml
+│       ├── docker-build.yml
+│       └── deploy.yml
+│
+├── .env
+├── .env.development
+├── .env.production
+├── .gitignore
+├── Makefile
+├── docker-compose.yml
+├── docker-compose.dev.yml
+├── docker-compose.prod.yml
+├── README.md
+├── LICENSE
+└── CONTRIBUTING.md

@@ -1,0 +1,6 @@
+redis==5.0.1
+asyncpg==0.29.0
+qdrant-client==1.7.3
+nats-py==2.9.0
+pydantic==2.5.3
+numpy==1.26.3

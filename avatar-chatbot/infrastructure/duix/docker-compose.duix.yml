@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  duix-avatar:
+    image: duix/avatar-renderer:latest
+    container_name: duix-avatar
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./models:/app/models
+      - ./assets:/app/assets
+      - ./config.yaml:/app/config.yaml
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['2']
+              capabilities: [gpu]
+    environment:
+      - RENDER_DEVICE=cuda
+      - MAX_AVATARS=5
+    restart: unless-stopped
+
+  fish-speech:
+    image: fishaudio/fish-speech:latest
+    container_name: fish-speech
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./voices:/app/voices
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['2']
+              capabilities: [gpu]

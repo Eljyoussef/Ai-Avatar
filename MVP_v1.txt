@@ -1,0 +1,492 @@
+Full Project Structure (Production-Grade)
+
+This structure is designed for:
+
+Docker-first development
+NATS event-driven architecture
+GPU isolation
+Horizontal scalability
+Clean microservices boundaries
+Future Kubernetes migration
+Duix integration
+Realtime streaming
+Production observability
+ROOT STRUCTURE
+avatar-chatbot/
+│
+├── apps/
+│
+├── services/
+│
+├── infrastructure/
+│
+├── ai-models/
+│
+├── shared/
+│
+├── configs/
+│
+├── scripts/
+│
+├── monitoring/
+│
+├── docs/
+│
+├── docker-compose.yml
+├── docker-compose.dev.yml
+├── docker-compose.prod.yml
+├── .env
+├── .gitignore
+├── Makefile
+├── README.md
+│
+└── LICENSE
+1. APPS LAYER
+
+Frontend + public-facing applications.
+
+apps/
+│
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   ├── hooks/
+│   ├── services/
+│   ├── stores/
+│   ├── utils/
+│   ├── public/
+│   ├── styles/
+│   ├── package.json
+│   ├── next.config.js
+│   └── Dockerfile
+│
+└── admin-dashboard/
+    ├── metrics/
+    ├── session-monitor/
+    ├── avatar-manager/
+    └── Dockerfile
+2. CORE MICROSERVICES
+
+Every service is isolated.
+
+services/
+│
+├── gateway/
+├── session-manager/
+├── accent-router/
+├── asr-service/
+├── intent-service/
+├── rag-service/
+├── inference-gateway/
+├── memory-service/
+├── tts-service/
+├── avatar-adapter/
+├── document-processor/
+├── summarizer/
+└── auth-service/
+3. GATEWAY SERVICE
+
+Realtime entrypoint.
+
+services/gateway/
+│
+├── app/
+│   ├── api/
+│   ├── websocket/
+│   ├── webrtc/
+│   ├── middleware/
+│   ├── auth/
+│   ├── nats/
+│   ├── streaming/
+│   ├── utils/
+│   └── main.py
+│
+├── requirements.txt
+├── Dockerfile
+└── .env
+
+Responsibilities:
+
+WebRTC signaling
+WebSocket streaming
+JWT auth
+NATS publishing
+realtime routing
+rate limiting
+4. SESSION MANAGER (GO)
+
+Ultra-fast orchestration.
+
+services/session-manager/
+│
+├── cmd/
+│   └── main.go
+│
+├── internal/
+│   ├── session/
+│   ├── redis/
+│   ├── nats/
+│   ├── models/
+│   ├── handlers/
+│   ├── interruptions/
+│   └── memory/
+│
+├── go.mod
+├── Dockerfile
+└── .env
+
+Responsibilities:
+
+session lifecycle
+interruption handling
+conversation state
+audio buffers
+user preferences
+routing metadata
+5. ACCENT ROUTER
+services/accent-router/
+│
+├── app/
+│   ├── models/
+│   ├── classifier/
+│   ├── routing/
+│   ├── profiles/
+│   └── main.py
+│
+├── weights/
+│
+├── Dockerfile
+└── requirements.txt
+
+Contains:
+
+XLS-R model
+accent profiles
+routing logic
+vocabulary bias configs
+6. ASR SERVICE
+services/asr-service/
+│
+├── app/
+│   ├── streaming/
+│   ├── whisper/
+│   ├── vad/
+│   ├── decoding/
+│   ├── models/
+│   └── main.py
+│
+├── models/
+│   ├── fr-fr/
+│   ├── fr-ca/
+│   ├── fr-af/
+│   └── multilingual/
+│
+├── Dockerfile
+└── requirements.txt
+
+Contains:
+
+Faster-Whisper
+CTranslate2
+VAD
+streaming transcription
+partial transcripts
+7. RAG SERVICE
+
+The brain for document retrieval.
+
+services/rag-service/
+│
+├── app/
+│   ├── retrieval/
+│   ├── reranking/
+│   ├── chunking/
+│   ├── embeddings/
+│   ├── compression/
+│   ├── graph/
+│   ├── pipelines/
+│   └── main.py
+│
+├── workers/
+│
+├── Dockerfile
+└── requirements.txt
+8. DOCUMENT PROCESSOR
+
+Handles uploads and indexing.
+
+services/document-processor/
+│
+├── app/
+│   ├── ingestion/
+│   ├── extraction/
+│   ├── parsing/
+│   ├── chunking/
+│   ├── embedding/
+│   ├── indexing/
+│   └── main.py
+│
+├── temp/
+├── uploads/
+│
+├── Dockerfile
+└── requirements.txt
+
+Supports:
+
+PDF
+DOCX
+TXT
+HTML
+markdown
+OCR later
+9. INFERENCE GATEWAY
+services/inference-gateway/
+│
+├── app/
+│   ├── prompting/
+│   ├── streaming/
+│   ├── fallback/
+│   ├── routing/
+│   ├── providers/
+│   └── main.py
+│
+├── Dockerfile
+└── requirements.txt
+
+Responsibilities:
+
+prompt construction
+vLLM communication
+fallback logic
+token streaming
+10. TTS SERVICE
+services/tts-service/
+│
+├── app/
+│   ├── xtts/
+│   ├── streaming/
+│   ├── voices/
+│   ├── chunking/
+│   ├── synthesis/
+│   └── main.py
+│
+├── voices/
+│   ├── fr-fr/
+│   ├── fr-ca/
+│   ├── fr-af/
+│   └── cloned/
+│
+├── Dockerfile
+└── requirements.txt
+
+Contains:
+
+XTTS-v2
+voice embeddings
+streaming synthesis
+chunked audio output
+11. DUIX AVATAR INTEGRATION
+
+Very important.
+
+services/avatar-adapter/
+│
+├── app/
+│   ├── duix/
+│   ├── rendering/
+│   ├── streaming/
+│   ├── synchronization/
+│   ├── avatars/
+│   └── main.py
+│
+├── cache/
+├── temp/
+│
+├── Dockerfile
+└── requirements.txt
+
+Responsibilities:
+
+connect XTTS output → Duix
+avatar rendering
+lip sync orchestration
+video stream publishing
+avatar cache management
+12. MEMORY SERVICE
+services/memory-service/
+│
+├── app/
+│   ├── redis_store/
+│   ├── postgres_store/
+│   ├── semantic_memory/
+│   ├── summarization/
+│   └── main.py
+│
+├── Dockerfile
+└── requirements.txt
+13. SHARED LIBRARIES
+
+Shared utilities for all services.
+
+shared/
+│
+├── nats/
+├── logging/
+├── tracing/
+├── schemas/
+├── prompts/
+├── auth/
+├── metrics/
+├── constants/
+└── utils/
+
+VERY IMPORTANT:
+
+This avoids duplicated code everywhere.
+
+14. INFRASTRUCTURE
+infrastructure/
+│
+├── qdrant/
+├── opensearch/
+├── postgres/
+├── redis/
+├── nats/
+├── vllm/
+├── duix/
+├── minio/
+└── nginx/
+
+Contains:
+
+configs
+init scripts
+persistence configs
+15. MONITORING STACK
+monitoring/
+│
+├── prometheus/
+│
+├── grafana/
+│   ├── dashboards/
+│   └── datasources/
+│
+├── loki/
+│
+├── jaeger/
+│
+└── otel/
+16. AI MODELS DIRECTORY
+ai-models/
+│
+├── whisper/
+├── xtts/
+├── embeddings/
+├── rerankers/
+├── accent/
+├── llm/
+└── duix/
+
+This prevents downloading models repeatedly inside containers.
+
+17. CONFIGS
+configs/
+│
+├── development/
+├── production/
+├── staging/
+└── local/
+
+Contains:
+
+env templates
+yaml configs
+secrets templates
+18. DOCKER STRUCTURE
+docker/
+│
+├── base/
+├── gpu/
+├── cpu/
+└── development/
+19. SCRIPTS
+scripts/
+│
+├── bootstrap.sh
+├── start-dev.sh
+├── build-all.sh
+├── download-models.sh
+├── migrate-db.sh
+├── backup.sh
+└── cleanup.sh
+20. MVP BUILD ORDER (IMPORTANT)
+
+DO NOT build everything at once.
+
+Build in this exact order:
+
+PHASE 1 — FOUNDATION
+
+Build first:
+
+1. NATS
+2. Redis
+3. PostgreSQL
+4. FastAPI Gateway
+5. Frontend
+
+Goal:
+
+websocket communication working
+realtime audio streaming working
+PHASE 2 — SPEECH
+6. ASR Service
+7. XTTS Service
+8. Realtime audio playback
+
+Goal:
+
+voice-to-voice conversation working
+PHASE 3 — INTELLIGENCE
+9. vLLM
+10. Inference Gateway
+11. Session Manager
+12. Memory Service
+
+Goal:
+
+intelligent streaming responses
+PHASE 4 — RAG
+13. Document Processor
+14. Qdrant
+15. OpenSearch
+16. RAG Service
+
+Goal:
+
+document-aware conversations
+PHASE 5 — ACCENTS
+17. Accent Router
+18. Accent-specific ASR/TTS
+
+Goal:
+
+native French regional support
+PHASE 6 — DUIX AVATAR
+19. Duix Integration
+20. Avatar Adapter
+21. Video streaming
+
+Goal:
+
+realtime talking avatars
+PHASE 7 — OBSERVABILITY
+22. Prometheus
+23. Grafana
+24. Jaeger
+25. Loki
+
+Goal:
+
+production debugging and monitoring

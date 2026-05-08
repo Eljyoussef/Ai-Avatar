@@ -1,0 +1,4 @@
+httpx==0.26.0
+nats-py==2.9.0
+pydantic==2.5.3
+openai==1.8.0  # For vLLM OpenAI-compatible API

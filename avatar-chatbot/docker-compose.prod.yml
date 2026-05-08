@@ -1,0 +1,272 @@
+# version: '3.8'
+
+services:
+  nats:
+    extends:
+      file: docker-compose.yml
+      service: nats
+    restart: always
+
+  redis:
+    extends:
+      file: docker-compose.yml
+      service: redis
+    restart: always
+
+  postgres:
+    extends:
+      file: docker-compose.yml
+      service: postgres
+    restart: always
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_prod_data:/qdrant/storage
+    restart: always
+
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    container_name: opensearch
+    environment:
+      - discovery.type=single-node
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - DISABLE_SECURITY_PLUGIN=true
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch_prod_data:/usr/share/opensearch/data
+    restart: always
+
+  gateway:
+    build:
+      context: .
+      dockerfile: services/gateway/Dockerfile.dev
+    ports:
+      - "8000:8000"
+    environment:
+      - NATS_HOST=nats
+      - REDIS_HOST=redis
+      - ENVIRONMENT=production
+    depends_on:
+      - nats
+      - redis
+    restart: always
+
+  session-manager:
+    build:
+      context: ./services/session-manager
+      dockerfile: Dockerfile
+    environment:
+      - NATS_URL=nats://nats:4222
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - nats
+      - redis
+    restart: always
+
+  accent-router:
+    build:
+      context: ./services/accent-router
+      dockerfile: Dockerfile
+    environment:
+      - NATS_HOST=nats
+    depends_on:
+      - nats
+    restart: always
+
+  intent-service:
+    build:
+      context: ./services/intent-service
+      dockerfile: Dockerfile
+    environment:
+      - NATS_HOST=nats
+    depends_on:
+      - nats
+    restart: always
+
+  asr-service:
+    build:
+      context: ./services/asr-service
+      dockerfile: Dockerfile
+    environment:
+      - NATS_HOST=nats
+    depends_on:
+      - nats
+    restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]
+
+  tts-service:
+    build:
+      context: ./services/tts-service
+      dockerfile: Dockerfile
+    environment:
+      - NATS_HOST=nats
+    depends_on:
+      - nats
+    restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]
+
+  rag-service:
+    build:
+      context: ./services/rag-service
+      dockerfile: Dockerfile
+    environment:
+      - NATS_HOST=nats
+      - QDRANT_HOST=qdrant
+      - OPENSEARCH_HOST=opensearch
+    depends_on:
+      - nats
+      - qdrant
+      - opensearch
+    restart: always
+
+  inference-gateway:
+    build:
+      context: ./services/inference-gateway
+      dockerfile: Dockerfile
+    environment:
+      - NATS_HOST=nats
+      - VLLM_BASE_URL=http://vllm:8000/v1
+    depends_on:
+      - nats
+      - vllm
+    restart: always
+
+  memory-service:
+    build:
+      context: ./services/memory-service
+      dockerfile: Dockerfile
+    environment:
+      - NATS_HOST=nats
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=chatbot
+      - POSTGRES_PASSWORD=chatbot_secret
+      - POSTGRES_DB=chatbot
+    depends_on:
+      - nats
+      - redis
+      - postgres
+      - qdrant
+    restart: always
+
+  document-processor:
+    build:
+      context: ./services/document-processor
+      dockerfile: Dockerfile
+    environment:
+      - NATS_HOST=nats
+    depends_on:
+      - nats
+    restart: always
+
+  avatar-adapter:
+    build:
+      context: ./services/avatar-adapter
+      dockerfile: Dockerfile
+    environment:
+      - NATS_HOST=nats
+      - DUIX_API_URL=http://duix-avatar:8080
+    depends_on:
+      - nats
+    restart: always
+
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: vllm
+    command:
+      - "--model"
+      - "mistralai/Mistral-7B-Instruct-v0.3"
+      - "--port"
+      - "8000"
+      - "--max-model-len"
+      - "4096"
+      - "--gpu-memory-utilization"
+      - "0.85"
+    ports:
+      - "8001:8000"
+    volumes:
+      - vllm_cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]
+    restart: always
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
+    depends_on:
+      - gateway
+    restart: always
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+    volumes:
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    restart: always
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    restart: always
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yaml
+    restart: always
+
+volumes:
+  postgres_prod_data:
+  qdrant_prod_data:
+  opensearch_prod_data:
+  vllm_cache:

@@ -1,0 +1,239 @@
+CLIENT LAYER
+────────────────────────────────────────────
+Next.js Frontend
+React
+WebRTC Audio/Video
+Realtime Avatar Canvas
+Chat UI
+Document Upload
+Conversation Timeline
+Settings UI
+Accent Selector
+Voice Selector
+Avatar Selector
+Authentication UI
+
+                ↓
+
+REALTIME EDGE LAYER
+────────────────────────────────────────────
+FastAPI Gateway
+WebSocket/WebRTC
+Streaming Audio Router
+Realtime Video Stream Router
+JWT Authentication
+Rate Limiting
+Session Validation
+Streaming Buffer Manager
+Upload Gateway
+
+                ↓
+
+EVENT MESH
+────────────────────────────────────────────
+NATS Core / JetStream
+
+Subjects:
+- asr.*
+- rag.*
+- llm.*
+- tts.*
+- avatar.*
+- session.*
+- memory.*
+- metrics.*
+- tracing.*
+- realtime.*
+
+Enables:
+- parallel processing
+- interruption handling
+- distributed streaming
+- service decoupling
+- realtime orchestration
+
+                ↓
+
+CORE AI SERVICES (THE BRAIN)
+────────────────────────────────────────────
+
+Session Manager (Go/Rust)
+- barge-in handling
+- playback state
+- user profile
+- buffer control
+- conversation routing
+
+Accent Router
+(XLS-R / ECAPA-TDNN)
+- French accent classification
+- routing to regional ASR/TTS profiles
+
+Intent Predictor
+- early intent detection
+- retrieval prefetching
+
+ASR Streaming Cluster
+(Faster-Whisper + CTranslate2)
+- realtime transcription
+- partial transcript streaming
+- multilingual inference
+
+RAG Retrieval Mesh
+- Qdrant dense retrieval
+- OpenSearch sparse retrieval
+- BM25 + SPLADE
+- Reciprocal Rank Fusion
+- Cross-encoder reranking
+- contextual compression
+- optional Neo4j graph retrieval
+
+Inference Gateway
+- request routing
+- batching
+- model fallback
+- cancellation handling
+- streaming token relay
+
+vLLM Inference Cluster
+(Mistral / Llama)
+- continuous batching
+- PagedAttention
+- speculative decoding
+- streaming generation
+
+TTS Streaming Cluster
+(XTTS-v2 / Fish Speech)
+- streaming synthesis
+- accent-specific voice embeddings
+- multilingual voice cloning
+
+Memory Service
+- semantic recall
+- summarization
+- preference retrieval
+- long-term memory management
+
+                ↓
+
+DUIX AVATAR LAYER (THE FACE)
+────────────────────────────────────────────
+
+Avatar Adapter Service
+(FastAPI)
+- XTTS audio ingestion
+- Duix orchestration
+- avatar asset management
+- stream synchronization
+- render queue management
+
+Duix Avatar Renderer
+- talking avatar rendering
+- lip synchronization
+- facial animation
+- digital human synthesis
+- avatar cloning
+
+Fish Speech
+- optional voice cloning
+- avatar voice synthesis
+
+FunASR
+- optional avatar-side ASR tools
+
+Realtime Avatar Streamer
+- WebRTC avatar video output
+- synchronized audio/video playback
+
+                ↓
+
+DATA LAYER
+────────────────────────────────────────────
+
+Redis
+- hot session state
+- interruption flags
+- streaming buffers
+- realtime cache
+
+PostgreSQL
+- transcripts
+- user settings
+- authentication
+- persistent conversation history
+
+Qdrant
+- vector search
+- semantic memory
+- document embeddings
+- user fact embeddings
+
+OpenSearch
+- BM25 retrieval
+- SPLADE sparse search
+- keyword indexing
+
+Neo4j (Optional)
+- document relationships
+- knowledge graph traversal
+
+                ↓
+
+OBSERVABILITY & OPERATIONS
+────────────────────────────────────────────
+
+Prometheus
+- metrics collection
+- latency histograms
+- GPU metrics
+- queue depth monitoring
+
+Grafana
+- realtime dashboards
+- service health
+- ASR/TTS monitoring
+- avatar rendering analytics
+
+Jaeger
+- distributed tracing
+- end-to-end request debugging
+
+Loki
+- centralized logs
+- structured container logging
+
+OpenTelemetry
+- tracing instrumentation
+- metrics export
+- distributed observability
+
+                ↓
+
+INFRASTRUCTURE LAYER
+────────────────────────────────────────────
+
+Docker Compose (MVP)
+- local development
+- single-node deployment
+
+Kubernetes (Production)
+- autoscaling
+- GPU node pools
+- rolling deployments
+- high availability
+
+NVIDIA Container Runtime
+- GPU passthrough
+- isolated GPU workloads
+
+CI/CD Pipeline
+- GitHub Actions
+- container builds
+- deployment automation
+
+Object Storage
+(MinIO / S3 compatible)
+- uploaded documents
+- avatar assets
+- generated media
+- cached renders

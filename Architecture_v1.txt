@@ -1,0 +1,500 @@
+Core Architecture Principle
+
+Event-driven, streaming-first, fully open-source conversational AI avatar platform with document awareness, realtime voice interaction, French multi-accent support, and integrated digital human rendering via Duix.Avatar.
+
+The system is designed around:
+
+ultra-low-latency streaming,
+distributed microservices,
+modular AI pipelines,
+realtime interruption handling,
+scalable GPU inference,
+self-hosted infrastructure,
+avatar-driven conversational experiences.
+The Full Flow (9 Stages)
+1. User Speech + Avatar UI → WebRTC
+
+Browser captures:
+
+microphone audio,
+optional webcam,
+avatar interactions.
+
+Streams through:
+
+WebRTC,
+Opus codec,
+low-latency bidirectional audio/video.
+
+Frontend stack:
+
+Next.js,
+React,
+WebRTC,
+realtime avatar canvas/video player.
+2. Gateway → NATS Event Mesh
+
+FastAPI Gateway:
+
+receives WebRTC streams,
+authenticates sessions,
+manages streaming connections,
+converts audio packets into NATS events.
+
+NATS distributes events in parallel across services.
+
+Subjects:
+
+asr.*
+rag.*
+llm.*
+tts.*
+avatar.*
+session.*
+memory.*
+metrics.*
+
+This eliminates blocking pipelines and enables realtime concurrency.
+
+3. Session Manager Intercepts First
+
+Dedicated Go/Rust microservice optimized for microsecond latency.
+
+Responsibilities:
+
+session state,
+interruption/barge-in handling,
+audio playback state,
+token buffering,
+gender preference,
+accent profile,
+conversation routing.
+
+Redis-backed hot memory.
+
+Stateless compute layer for easy scaling.
+
+4. Accent Router Classifies
+
+Realtime accent classification using:
+
+XLS-R,
+ECAPA-TDNN,
+lightweight French accent classifiers.
+
+Supported profiles:
+
+fr-FR,
+fr-CA,
+fr-AF,
+fr-BE,
+fr-CH,
+multilingual fallback.
+
+Latency target:
+
+<50ms
+
+Routing controls:
+
+ASR profile,
+TTS voice embedding,
+regional vocabulary adaptation,
+pronunciation biasing.
+5. ASR Streaming Cluster
+
+Realtime speech recognition powered by:
+
+Faster-Whisper,
+CTranslate2,
+quantized inference (4-bit/8-bit).
+
+Features:
+
+streaming partial transcripts,
+low GPU usage,
+realtime decoding,
+multilingual support,
+French accent fine-tuning.
+
+No sentence completion required before inference begins.
+
+6. RAG Retrieval Mesh (Parallel)
+
+Intent prediction launches retrieval BEFORE speech completion.
+
+Dense Retrieval
+
+Qdrant:
+
+multilingual-e5-large embeddings,
+metadata filtering,
+semantic memory retrieval.
+Sparse Retrieval
+
+OpenSearch:
+
+BM25,
+SPLADE,
+keyword precision.
+Retrieval Fusion
+
+Reciprocal Rank Fusion (RRF).
+
+Reranking
+
+Cross-encoder multilingual reranker.
+
+Context Compression
+
+LLMLingua:
+
+removes filler,
+compresses irrelevant context,
+reduces token cost.
+Optional Knowledge Graph
+
+Neo4j:
+
+document relationships,
+semantic references,
+chapter linkage,
+structured knowledge traversal.
+7. vLLM Streaming Inference
+
+LLM inference cluster powered by:
+
+vLLM,
+continuous batching,
+PagedAttention,
+streaming token generation.
+
+Primary models:
+
+Mistral 7B,
+Llama 3,
+future fine-tuned French conversational models.
+
+Features:
+
+early token streaming,
+interruption-aware cancellation,
+fallback model routing,
+speculative decoding (future optimization).
+8. TTS Streaming Cluster
+
+Voice synthesis powered by:
+
+XTTS-v2,
+multilingual voice cloning,
+streaming phrase generation.
+
+Features:
+
+accent-specific voice embeddings,
+realtime chunk synthesis,
+voice personalization,
+French regional variants.
+
+Fallback chain:
+
+XTTS-v2
+   ↓
+Kokoro
+   ↓
+Fish Speech
+
+Premium optional path:
+
+ElevenLabs integration.
+9. Duix Avatar Rendering Layer (Digital Human Layer)
+
+Duix.Avatar is integrated as the visual avatar engine.
+
+Your architecture remains the conversational brain.
+
+Duix becomes:
+
+the face,
+lip-sync engine,
+digital human renderer.
+Duix Responsibilities
+talking avatar rendering,
+face animation,
+lip synchronization,
+avatar cloning,
+voice/video alignment,
+digital human generation.
+Integration Flow
+LLM Response
+    ↓
+XTTS-v2 Audio
+    ↓
+Avatar Adapter Service
+    ↓
+Duix Avatar Renderer
+    ↓
+Talking Human Video Stream
+    ↓
+Frontend Avatar Playback
+Duix Components Used
+
+Keep:
+
+Fish Speech,
+Avatar Renderer,
+Lip Sync Engine,
+Face Animation,
+Video Synthesis APIs.
+
+Ignore:
+
+Electron frontend,
+local orchestration,
+desktop app architecture.
+
+Duix runs as isolated Docker microservices inside your infrastructure.
+
+Key Technology Choices & Why
+Component	Choice	Reason
+Gateway	FastAPI	Fast async streaming APIs
+Event Bus	NATS	Ultra-low-latency pub/sub
+Session Manager	Go/Rust	Sub-ms interruption handling
+ASR	Faster-Whisper	Free, local, fast
+Accent Classifier	XLS-R	French accent routing
+Vector DB	Qdrant	Fast Rust vector engine
+Sparse Search	OpenSearch	Free Elasticsearch alternative
+Retrieval Fusion	RRF	Better recall
+Reranker	Cross-encoder multilingual	Retrieval precision
+LLM Inference	vLLM	Streaming + batching
+TTS	XTTS-v2	Free realtime voice cloning
+Avatar Rendering	Duix.Avatar	Open-source talking humans
+Memory	Redis + Postgres + Qdrant	Tiered memory architecture
+Observability	Grafana Stack	Production debugging
+Containers	Docker	Easy deployment
+Orchestration	Kubernetes (later)	Horizontal scaling
+What Makes It Production-Grade
+Streaming Everywhere
+
+Pipeline:
+
+ASR partial
+   ↓
+early retrieval
+   ↓
+streaming LLM
+   ↓
+chunked TTS
+   ↓
+avatar rendering
+
+No blocking stages.
+
+Latency Optimization
+
+Target:
+
+800ms–1.2s
+speech end → first audio response
+
+NATS eliminates serial bottlenecks.
+
+vLLM streams immediately.
+
+XTTS starts speaking before full generation completes.
+
+Horizontal Scalability
+
+Each service scales independently:
+
+ASR nodes,
+TTS nodes,
+vLLM nodes,
+avatar renderers,
+retrieval workers.
+
+GPU services isolated by workload.
+
+Resilience
+
+Fallback chains:
+
+vLLM → smaller local model
+XTTS → Kokoro → Fish Speech
+accent model → multilingual fallback
+
+NATS retry/reply patterns manage transient failures.
+
+Zero Mandatory API Costs
+
+Everything runs locally:
+
+ASR,
+LLM,
+TTS,
+avatar rendering,
+RAG,
+memory.
+
+Optional paid integrations remain optional only.
+
+The Accent Pipeline (Critical Differentiator)
+Audio chunk
+    ↓
+XLS-R Accent Classifier
+    ↓
+Profile Router
+
+Routing examples:
+
+fr-FR → Whisper FR + XTTS Parisian Voice
+fr-CA → Quebec fine-tune + Montreal XTTS
+fr-AF → African French profile + Abidjan XTTS
+fr-BE → Belgian profile
+fr-CH → Swiss profile
+unknown → multilingual fallback
+
+Each profile contains:
+
+custom ASR tuning,
+custom TTS embedding,
+vocabulary bias lists,
+pronunciation adjustments.
+Memory Architecture (3 Tiers)
+Redis (Hot Memory)
+current session,
+interruption state,
+playback buffers,
+realtime flags.
+
+Latency:
+
+<1ms
+PostgreSQL (Warm Memory)
+transcripts,
+preferences,
+gender settings,
+session history.
+Qdrant (Cold Semantic Memory)
+long-term user facts,
+interests,
+semantic recall,
+document references.
+
+Async summarizer periodically compresses long conversations into memory embeddings.
+
+Docker Architecture
+docker-compose.yml
+
+Services:
+
+- gateway
+- nats
+- session-manager
+- redis
+- postgres
+- qdrant
+- opensearch
+
+- whisper-asr
+- rag-service
+- inference-gateway
+- vllm
+- xtts
+
+- duix-avatar
+- fish-speech
+- fun-asr
+
+- prometheus
+- grafana
+- jaeger
+- loki
+
+GPU services use NVIDIA runtime.
+
+CPU services scale independently.
+
+Duix Integration Strategy
+Duix is NOT the brain.
+
+Duix is:
+
+Avatar Layer
+
+Your AI architecture controls:
+
+conversation,
+memory,
+retrieval,
+reasoning,
+streaming.
+
+Duix handles:
+
+facial rendering,
+talking avatar generation,
+lip synchronization.
+Avatar Adapter Service
+
+Custom FastAPI adapter:
+
+POST /avatar/render
+
+Responsibilities:
+
+send XTTS audio to Duix,
+manage avatar models,
+stream rendered video,
+cache avatar assets,
+synchronize audio/video timing.
+Realtime Strategy
+Mode 1 — Instant Voice Mode
+
+Fastest interaction:
+
+XTTS audio,
+lightweight avatar animation.
+Mode 2 — HD Avatar Mode
+
+Background Duix rendering:
+
+better lip sync,
+higher realism,
+cinematic avatar quality.
+
+Frontend swaps streams dynamically.
+
+Observability (Essential)
+Prometheus
+
+Metrics:
+
+latency,
+GPU usage,
+queue depth,
+token throughput.
+Grafana
+
+Realtime dashboards:
+
+ASR confidence,
+TTS health,
+avatar rendering latency,
+NATS throughput.
+Jaeger
+
+Distributed tracing:
+
+WebRTC
+→ NATS
+→ ASR
+→ RAG
+→ LLM
+→ TTS
+→ Duix
+Loki
+
+Structured logs from all containers.
+
+Critical for debugging realtime streaming systems.
