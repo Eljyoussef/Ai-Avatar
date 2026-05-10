@@ -1,0 +1,22 @@
+docker logs avatar-chatbot-frontend-1 --tail 30
+docker logs avatar-chatbot-memory-service-1 --tail 30
+docker logs avatar-chatbot-rag-service-1 --tail 30
+docker logs avatar-chatbot-tts-service-1 --tail 30
+docker logs avatar-chatbot-inference-gateway-1 --tail 30
+docker logs avatar-chatbot-intent-service-1 --tail 30
+docker logs avatar-chatbot-avatar-adapter-1 --tail 30
+docker logs avatar-chatbot-document-processor-1 --tail 30
+docker logs avatar-chatbot-asr-service-1 --tail 30
+docker logs avatar-chatbot-accent-router-1 --tail 30
+docker logs avatar-chatbot-gateway-1 --tail 30
+docker logs avatar-chatbot-session-manager-1 --tail 30
+docker logs postgres --tail 30
+docker logs qdrant --tail 30
+docker logs redis --tail 30
+docker logs nats --tail 30
+docker logs avatar-chatbot-jaeger-1 --tail 30
+docker logs avatar-chatbot-prometheus-1 --tail 30
+docker logs avatar-chatbot-grafana-1 --tail 30
+docker logs avatar-chatbot-loki-1 --tail 30
+docker logs opensearch --tail 30
+               

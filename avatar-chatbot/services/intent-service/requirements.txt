@@ -1,4 +1,4 @@
-torch==2.1.2
-transformers==4.36.2
-nats-py==2.9.0
-pydantic==2.5.3
+torch --extra-index-url https://download.pytorch.org/whl/cpu
+transformers
+nats-py
+pydantic

@@ -1,6 +1,6 @@
 import numpy as np
 import logging
-from typing import List, Tuple
+from typing import List, Dict
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,7 @@
-faster-whisper==1.0.3
-torch==2.1.2
-numpy==1.26.3
-nats-py==2.9.0
-pydantic==2.5.3
-webrtcvad==2.0.10
+faster-whisper
+torch --extra-index-url https://download.pytorch.org/whl/cpu
+numpy
+nats-py
+pydantic
+webrtcvad
+ctranslate2

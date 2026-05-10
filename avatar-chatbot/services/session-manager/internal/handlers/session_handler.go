@@ -3,82 +3,61 @@ package handlers
 import (
     "context"
     "encoding/json"
-    "time"
     "strings"
+    "time"
 
     "github.com/avatar-chatbot/session-manager/internal/session"
-    "github.com/nats-io/nats.go"
     "go.uber.org/zap"
 )
+
+type NATSPubSub interface {
+    Publish(subject string, data interface{}) error
+    Subscribe(subject string, handler func(subject string, data []byte)) error
+}
 
 type SessionHandler struct {
     manager *session.Manager
     logger  *zap.Logger
-    nats    *nats.Conn
+    nats    NATSPubSub
 }
 
-func NewSessionHandler(manager *session.Manager, natsConn *nats.Conn, logger *zap.Logger) *SessionHandler {
+func NewSessionHandler(manager *session.Manager, nats NATSPubSub, logger *zap.Logger) *SessionHandler {
     return &SessionHandler{
         manager: manager,
         logger:  logger,
-        nats:    natsConn,
+        nats:    nats,
     }
 }
 
 func (h *SessionHandler) Register() error {
-    // Handle session creation
-    h.nats.Subscribe("session.create", func(msg *nats.Msg) {
+    h.nats.Subscribe("session.create", func(subject string, data []byte) {
         var req struct {
             UserID string `json:"user_id"`
         }
-        json.Unmarshal(msg.Data, &req)
-
+        json.Unmarshal(data, &req)
         ctx := context.Background()
-        s, err := h.manager.CreateSession(ctx, req.UserID)
-        if err != nil {
-            h.logger.Error("Failed to create session", zap.Error(err))
-            return
-        }
-
-        response, _ := json.Marshal(s)
-        msg.Respond(response)
+        h.manager.CreateSession(ctx, req.UserID)
     })
 
-    // Handle interrupts
-    h.nats.Subscribe("session.*.control.interrupt", func(msg *nats.Msg) {
-        sessionID := extractSessionID(msg.Subject)
-        ctx := context.Background()
-        
-        if err := h.manager.HandleInterrupt(ctx, sessionID); err != nil {
-            h.logger.Error("Failed to handle interrupt", zap.Error(err))
-        }
+    h.nats.Subscribe("session.*.control.interrupt", func(subject string, data []byte) {
+        sessionID := extractSessionID(subject)
+        h.manager.HandleInterrupt(context.Background(), sessionID)
     })
 
-    // Handle accent updates
-    h.nats.Subscribe("session.*.accent.update", func(msg *nats.Msg) {
-        sessionID := extractSessionID(msg.Subject)
-        var req struct {
-            Accent string `json:"accent"`
-        }
-        json.Unmarshal(msg.Data, &req)
-
-        ctx := context.Background()
-        h.manager.SetAccent(ctx, sessionID, req.Accent)
+    h.nats.Subscribe("session.*.accent.update", func(subject string, data []byte) {
+        sessionID := extractSessionID(subject)
+        var req struct{ Accent string `json:"accent"` }
+        json.Unmarshal(data, &req)
+        h.manager.SetAccent(context.Background(), sessionID, req.Accent)
     })
 
-    // Handle gender updates
-    h.nats.Subscribe("session.*.gender.update", func(msg *nats.Msg) {
-        sessionID := extractSessionID(msg.Subject)
-        var req struct {
-            Gender string `json:"gender"`
-        }
-        json.Unmarshal(msg.Data, &req)
-
-        ctx := context.Background()
-        h.manager.SetGender(ctx, sessionID, req.Gender)
+    h.nats.Subscribe("session.*.gender.update", func(subject string, data []byte) {
+        sessionID := extractSessionID(subject)
+        var req struct{ Gender string `json:"gender"` }
+        json.Unmarshal(data, &req)
+        h.manager.SetGender(context.Background(), sessionID, req.Gender)
     })
 
-    // Start cleanup goroutine
     go func() {
         ticker := time.NewTicker(5 * time.Minute)
         for range ticker.C {

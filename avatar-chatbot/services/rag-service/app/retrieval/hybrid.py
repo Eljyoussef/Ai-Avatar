@@ -58,9 +58,9 @@ class HybridRetriever:
         """Search using dense embeddings in Qdrant."""
         query_vector = self.encoder.encode(query).tolist()
         
-        results = self.qdrant.search(
+        results = self.qdrant.query_points(
             collection_name=self.config.collection_name,
-            query_vector=query_vector,
+            query=query_vector,
             limit=top_k
         )
         
@@ -71,7 +71,7 @@ class HybridRetriever:
                 "text": hit.payload.get("text", ""),
                 "metadata": hit.payload.get("metadata", {})
             }
-            for hit in results
+            for hit in results.points
         ]
     
     async def sparse_search(self, query: str, top_k: int = 20) -> List[Dict]:

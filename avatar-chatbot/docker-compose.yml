@@ -10,6 +10,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis
+    # command: redis-server --requirepass redis123
     ports:
       - "6379:6379"
     volumes:
@@ -31,6 +32,12 @@ services:
     restart: unless-stopped
 
   qdrant:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/collections"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
     image: qdrant/qdrant:latest
     container_name: qdrant
     ports:

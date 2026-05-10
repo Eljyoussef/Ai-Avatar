@@ -1,3 +1,7 @@
+https://github.com/himeshray99/Chatbot-PDF-Offline/tree/main
+
+https://github.com/reaganprice2004/voice-chatbot
+
 Core Architecture Principle
 
 Event-driven, streaming-first, fully open-source conversational AI avatar platform with document awareness, realtime voice interaction, French multi-accent support, and integrated digital human rendering via Duix.Avatar.

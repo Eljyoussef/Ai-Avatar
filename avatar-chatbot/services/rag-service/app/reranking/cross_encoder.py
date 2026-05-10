@@ -1,3 +1,4 @@
+import asyncio
 from typing import List, Dict
 from sentence_transformers import CrossEncoder
 import logging
@@ -9,22 +10,20 @@ class CrossEncoderReranker:
         self.model = CrossEncoder(config.reranker_model)
         
     async def rerank(self, query: str, documents: List[Dict]) -> List[Dict]:
-        """Rerank documents using cross-encoder."""
         if not documents:
             return []
         
-        # Create query-document pairs
         pairs = [[query, doc["text"]] for doc in documents]
         
-        # Score all pairs
-        scores = self.model.predict(pairs)
+        # Non-blocking inference
+        scores = await asyncio.to_thread(self.model.predict, pairs)
         
-        # Combine with documents and sort
-        scored_docs = list(zip(documents, scores))
-        scored_docs.sort(key=lambda x: x[1], reverse=True)
+        # Build properly structured results
+        scored = []
+        for doc, score in zip(documents, scores):
+            doc_copy = dict(doc)
+            doc_copy["rerank_score"] = float(score)
+            scored.append((float(score), doc_copy))
         
-        # Return reranked documents
-        return [
-            {**doc, "rerank_score": float(score)}
-            for doc, score in scored_docs
-        ]
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return [doc for _, doc in scored]

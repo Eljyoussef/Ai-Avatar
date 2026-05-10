@@ -21,17 +21,17 @@ class PersistentMemory:
         conversation_id: str,
         role: str,
         content: str,
-        documents_used: List[str] = None,
+        # documents_used: List[str] = None,
         latency_ms: int = None
     ):
         """Save a message to PostgreSQL."""
         async with self.pool.acquire() as conn:
             await conn.execute(
                 """
-                INSERT INTO messages (conversation_id, role, content, documents_used, latency_ms)
+                INSERT INTO messages (conversation_id, role, content, latency_ms)
                 VALUES ($1, $2, $3, $4, $5)
                 """,
-                conversation_id, role, content, documents_used, latency_ms
+                conversation_id, role, content, latency_ms
             )
     
     async def get_conversation_history(

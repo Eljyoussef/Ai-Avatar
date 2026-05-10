@@ -22,32 +22,27 @@ func main() {
 
     cfg := config.Load()
 
-    // Connect to Redis
     redisStore, err := redis.NewRedisStore(cfg.RedisURL, logger)
     if err != nil {
         logger.Fatal("Failed to connect to Redis", zap.Error(err))
     }
     defer redisStore.Close()
 
-    // Connect to NATS
     natsClient, err := nats.NewNATSClient(cfg.NatsURL, logger)
     if err != nil {
         logger.Fatal("Failed to connect to NATS", zap.Error(err))
     }
     defer natsClient.Close()
 
-    // Create session manager
     sessionMgr := session.NewManager(redisStore, natsClient, logger)
 
-    // Register handlers
-    handler := handlers.NewSessionHandler(sessionMgr, natsClient.conn, logger)
+    handler := handlers.NewSessionHandler(sessionMgr, natsClient, logger)
     if err := handler.Register(); err != nil {
         logger.Fatal("Failed to register handlers", zap.Error(err))
     }
 
     logger.Info("Session Manager running")
 
-    // Wait for shutdown
     ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
     defer stop()
     <-ctx.Done()

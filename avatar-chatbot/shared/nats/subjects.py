@@ -1,27 +1,34 @@
 class Subjects:
+
     @staticmethod
-    def audio_input(session_id): return f"session.{session_id}.audio.input"
-    
+    def audio_input(sid: str) -> str: return f"session.{sid}.audio.input"
+
     @staticmethod
-    def audio_output(session_id): return f"session.{session_id}.audio.output"
-    
+    def asr_partial(sid: str) -> str: return f"session.{sid}.asr.partial"
+
     @staticmethod
-    def asr_partial(session_id): return f"session.{session_id}.asr.partial"
-    
+    def asr_final(sid: str) -> str: return f"session.{sid}.asr.final"
+
     @staticmethod
-    def asr_final(session_id): return f"session.{session_id}.asr.final"
-    
+    def rag_query(sid: str) -> str: return f"session.{sid}.rag.query"
+
     @staticmethod
-    def llm_token(session_id): return f"session.{session_id}.llm.token"
-    
+    def rag_results(sid: str) -> str: return f"session.{sid}.rag.results"
+
     @staticmethod
-    def rag_query(session_id): return f"session.{session_id}.rag.query"
-    
+    def llm_request(sid: str) -> str: return f"session.{sid}.llm.request"
+
     @staticmethod
-    def rag_results(session_id): return f"session.{session_id}.rag.results"
-    
+    def llm_token(sid: str) -> str: return f"session.{sid}.llm.token"
+
     @staticmethod
-    def control_interrupt(session_id): return f"session.{session_id}.control.interrupt"
-    
+    def tts_request(sid: str) -> str: return f"session.{sid}.tts.request"
+
     @staticmethod
-    def session_output(session_id): return f"session.{session_id}.output"
+    def audio_output(sid: str) -> str: return f"session.{sid}.audio.output"
+
+    @staticmethod
+    def session_output(sid: str) -> str: return f"session.{sid}.output"
+
+    @staticmethod
+    def interrupt(sid: str) -> str: return f"session.{sid}.interrupt"

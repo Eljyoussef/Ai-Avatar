@@ -1,6 +1,6 @@
 import numpy as np
 from faster_whisper import WhisperModel
-from .config import ASRConfig
+from app.config import ASRConfig
 import logging
 
 logger = logging.getLogger(__name__)

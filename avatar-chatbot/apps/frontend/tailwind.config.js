@@ -1,6 +1,5 @@
-import type { Config } from 'tailwindcss'
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -20,18 +19,7 @@ const config: Config = {
           950: '#0a0a14',
         },
       },
-      animation: {
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'avatar-speak': 'avatarSpeak 0.3s ease-in-out infinite',
-      },
-      keyframes: {
-        avatarSpeak: {
-          '0%, 100%': { transform: 'scaleY(1)' },
-          '50%': { transform: 'scaleY(0.3)' },
-        },
-      },
     },
   },
   plugins: [],
 }
-export default config
